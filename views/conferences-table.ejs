@@ -1,0 +1,109 @@
+
+<script>
+    $(document).ready(function () {
+        // Filter conference table
+        $("#search-conferences").keyup(function(){
+            _this = this;
+            // Show only matching TR, hide rest of them
+            $.each($("#conference-table tbody tr"), function() {
+                if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
+                   $(this).hide();
+                else
+                   $(this).show();
+            });
+        });
+
+    });
+
+</script>
+
+<div class="col-sm-12">
+    <h1><span class="glyphicon glyphicon-th"></span> <%= header %></h1>
+    <a href="/conferences/add"><span class="fa fa-plus"></span> Add a conference</a>
+<div class="col-xs-4">
+ <input type="text" class="form-control" id="search-conferences" placeholder="Type to filter...">
+</div>
+<table data-toggle="table" class="table table-striped table-nonfluid sortable-theme-bootstrap table-condensed" data-sortable id="conference-table">
+    <thead>
+        <tr>
+            <th>Conference</th>
+            <th>Start Date</th>
+            <th>CFP End Date</th>
+            <th>S/A</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+<%
+    if (conferences) {
+      for (var i = 0; i < conferences.length; i++) {
+        var conference = conferences[i];
+        var speakers = JSON.parse(conference.speakers);
+        var timeTilCFP = (new Date(conference.cfp_end_date) - new Date())/(24*60*60*1000); 
+        var CFPclass = "";
+        if (new Date(conference.cfp_start_date) - new Date() < 0 && timeTilCFP > 30) {
+            CFPclass = "bg-success text-success";
+        } else if (timeTilCFP < -1) {
+            CFPclass = "";
+        } else if (timeTilCFP < 7) {
+            CFPclass = "bg-danger text-danger";
+        } else if (timeTilCFP < 30) {
+            CFPclass = "bg-warning text-warning";
+        }
+
+        // For sorting purposes
+        var cfp_end_time = new Date(conference.cfp_end_date);
+        cfp_end_time = cfp_end_time.getTime();
+
+        var start_time = new Date(conference.start_date);
+        start_time = start_time.getTime();
+%>
+        <tr>
+            <td>
+                <% if (conference.mine) { %>
+                  <a href="/conferences/modify/<%=conference.conferenceid%>"><%=conference.conference_name%></a>
+                <% } else { %>
+                    <%=conference.conference_name %>
+                <% } %>
+                    <% if (conference.website) { %>
+                        <a href="<%=conference.website%>" target=_blank><span class="fa fa-external-link"><span/></a>
+                    <% } %>
+            </td> 
+            <td data-value="<%=start_time%>"><%=conference.start_date%></td>
+            <td data-value="<%=cfp_end_time%>" <%=CFPclass ? "class = "+CFPclass:""%>><%=conference.cfp_end_date%></td>
+            <td>
+<span class="<%= (conference.accepted > 0)?'label label-success label-as-badge':'badge'%>"><%=conference.accepted%>/<%=conference.submitted%></span>
+            </td>
+            <td>
+<%
+            if (speakers) {
+                for (var j = 0; j < speakers.length; j++) {
+                    var speaker = speakers[j];
+%>
+                <% if (speaker.accepted == true) { %>
+                 <span class="glyphicon glyphicon-ok-circle glyphicon-success"></span>
+                <% } else if (speaker.accepted == false) { %>
+                 <span class="glyphicon glyphicon-remove-circle glyphicon-danger"></span>
+                <% } else { %>
+                  <span class="fa fa-question"></span>  
+                <% } %>
+                <span>
+                    <%=speaker.title%> (<%=speaker.name%>)
+                </span><br>
+
+
+<%
+                }
+            }
+%>
+ 
+            </td>
+        </tr>
+<%
+      }
+    }
+%>
+    </tbody>
+</table>
+
+</div>

@@ -1,0 +1,48 @@
+<% include ../header %>
+<div class="col-sm-8 col-sm-offset-2">
+    <h1><span class="fa fa-book"></span><%= talk ? "Edit" : "Add" %> a talk</h1>
+
+    <% if (errors && errors.length > 0) { %>
+        <div class="alert alert-danger"><%= errors %></div>
+    <% } %>
+
+    <!-- LOGIN FORM -->
+    <form action="" method="post" role="form" data-toggle="validator">
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" class="form-control" name="title" id="title" value="<%= talk.title %>" required>
+        </div>
+        <div class="form-group">
+            <label>Short abstract</label>
+            <textarea name="short_abstract" class="form-control"><%= talk.short_abstract %></textarea>
+        </div>
+        <div class="form-group">
+            <label>Abstract</label>
+            <textarea name="abstract" class="form-control" rows="10" required><%= talk.abstract %></textarea>
+        </div>
+        <div class="form-group">
+            <label for="talk_type">Select list:</label>
+                <%
+                    var types = ["30 minutes","60 minutes","Lightning","Ignite","Tutorial","Workshop","Keynote"];
+                %>
+                <select class="form-control" id="talk_type" name="talk_type">
+                    <% for (var i = 0; i< types.length; i++) { %>
+                        <option value="<%=types[i]%>" <%=(types[i] == talk.talk_type)?"selected":""%>><%=types[i]%></option>
+                    <% } %> 
+                </select>
+        </div>
+        <div class="form-group">
+            <label>Link to slides</label>
+            <input type="url" class="form-control" name="slide_link" value="<%= talk.slide_link %>">
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea name="notes" class="form-control" rows="10"><%= talk.notes %></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-warning btn-lg"><%= talk ? "Edit" : "Add" %> a talk</button>
+    </form>
+
+    <hr>
+</div>
+<% include ../footer %>

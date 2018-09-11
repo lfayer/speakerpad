@@ -1,0 +1,58 @@
+<% include ../header %>
+
+<script>
+    $(document).ready(function () {
+        // Filter submission table
+        $("#search-submissions").keyup(function(){
+            _this = this;
+            // Show only matching TR, hide rest of them
+            $.each($("#submission-table tbody tr"), function() {
+                if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
+                   $(this).hide();
+                else
+                   $(this).show();
+            });
+        });
+
+    });
+
+</script>
+
+<div class="col-sm-12 col-sm-offset-1">
+    <h1><span class="glyphicon glyphicon-th"></span> Member submissions</h1>
+<div class="col-xs-4">
+ <input type="text" class="form-control" id="search-submissions" placeholder="Type to filter...">
+</div>
+<table data-toggle="table" class="table table-striped table-nonfluid sortable-theme-bootstrap" data-sortable id="submission-table">
+    <thead>
+        <tr>
+            <th>Member</th>
+            <th>Talk</th>
+            <th>Conference</th>
+            <th data-sorted="true" data-sorted-direction="descending">Submitted on</th>
+            <th data-sortable="false">Accepted?</th>
+        </tr>
+    </thead>
+    <tbody>
+<%
+      for (var i = 0; i < submissions.length; i++) {
+        var submission = submissions[i];
+%>
+        <tr>
+            <td><%=submission.member_name%></td>
+            <td><a href="/talks/modify/<%=submission.talkid%>"><%=submission.title%></a></td>
+            <td><%=submission.conference_name%></td> 
+            <td><%=submission.submitted_date%></td> 
+            <td data-conferenceid="<%=submission.conferenceid%>" data-talkid="<%=submission.talkid%>">
+                <span class="glyphicon glyphicon-ok-circle submission-acceptance <%=(submission.accepted == true) ? 'glyphicon-success' : '' %>"></span>
+                <span class="glyphicon glyphicon-remove-circle submission-acceptance <%=(submission.accepted == false) ? 'glyphicon-danger' : '' %>"></span>
+            </td>
+        </tr>
+<%
+      }
+%>
+    </tbody>
+</table>
+
+</div>
+<% include ../footer %>

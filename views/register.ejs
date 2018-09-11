@@ -1,0 +1,17 @@
+<% include header %>
+<div class="col-sm-8 col-sm-offset-2">
+    <h1><span class="fa fa-sign-in"></span> Register</h1>
+
+    <% if (errors && errors.length > 0) { %>
+        <div class="alert alert-danger"><%= errors %></div>
+    <% } %>
+
+<% include reg-form %>
+    <hr>
+
+    <p>Already a member? <a href="/login">Login</a></p>
+
+    <div class="text-center">
+    </div>
+</div>
+<% include footer %>

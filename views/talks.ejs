@@ -1,0 +1,188 @@
+<% include header %>
+<script>
+    // pass talkid to modal for talk submission
+    $(document).on("click", ".submit-talk-link", function () {
+        $(".modal-body #talkid").val( $(this).data('id') );
+    });
+
+    $(document).ready(function () {
+        // submit talk to conference
+        $("#submit-talk-form-button").click(function(){
+            $.ajax({
+                type: "POST",
+                url: "/conferences/submit/talk", 
+                data: $('#submit-talk-form').serialize(),
+                success: function(msg){
+                    $("#conference_name").val('');  
+                    $("#submit-talk").modal('hide');  
+                },
+                error: function(){
+                    //alert("failure");
+                }
+            });
+        });
+
+        // typeahead for conferences
+
+                //Set up "Bloodhound" Options 
+                var my_Suggestion_class = new Bloodhound({
+                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('vval'),
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    //prefetch: {
+                    //    url: "/conferences/data/list",
+                    //    filter: function(confs) {
+                    //        return $.map(confs, function(conf) {
+                    //            return {vval: conf.conference_name};
+                    //        });
+                            //return catAR;
+                    //    }
+                    //},
+                    remote: {
+                        url: "/conferences/data/list/%QUERY",
+                        filter: function(x) {
+                            return $.map(x, function(conf) {
+                                return {vval: conf.conference_name};
+                            });
+                        },
+                        wildcard: "%QUERY"
+                    }
+                });
+
+                // Initialize Typeahead with Parameters
+                my_Suggestion_class.initialize();
+                var typeahead_elem = $('.typeahead');
+                typeahead_elem.typeahead({
+                    hint: false,
+                    highlight: true,
+                    minLength: 1
+                },
+                {
+                    // `ttAdapter` wraps the suggestion engine in an adapter that
+                    // is compatible with the typeahead jQuery plugin
+                    name: 'vval',
+                    displayKey: 'vval',
+                    source: my_Suggestion_class.ttAdapter()
+                });
+
+                //Get the Typeahead Value on Following Events
+                $('input').on([
+                    'typeahead:initialized',
+                    'typeahead:initialized:err',
+                    'typeahead:selected',
+                    'typeahead:autocompleted',
+                    'typeahead:cursorchanged',
+                    'typeahead:opened',
+                    'typeahead:closed'
+                ].join(' '), function(x) {
+                    //console.log(this.value); 
+                });
+
+
+    });  
+
+
+</script>
+
+<div class="col-sm-8 col-sm-offset-2">
+    <h1><span class="fa fa-book"></span> Talks</h1>
+
+    <a href="/talks/add"><span class="fa fa-plus"></span> Add a talk</a>
+
+<!-- modal for delete confirmation-->
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this talk?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger btn-ok">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal for talk submission -->
+
+<div class="modal fade" id="submit-talk" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+                <form id="submit-talk-form">
+                <input type="hidden" value="" name="talkid" id="talkid">
+                <div class="confform">
+                <label>Submit talk to: </label>
+                    <input type="text" class="typeahead form-control" name="conference_name" id="conference_name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary btn-ok" type="submit" id="submit-talk-form-button">Submit</a>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+<% 
+    for (var i = 0; i < talks.length; i++) { 
+        var talk = talks[i];
+
+%>
+      <tr>
+        <td>
+            <%
+                // pick an icon
+                var icon = 'file';
+                if (talk.talk_type == 'Ignite') icon = 'fire';
+                if (talk.talk_type == 'Lightning') icon = 'flash';
+                if (talk.talk_type == 'Keynote') icon = 'king';
+                if (talk.talk_type == 'Tutorial') icon = 'education';
+                if (talk.talk_type == 'Workshop') icon = 'wrench';
+            %>
+            <span class="glyphicon glyphicon-<%=icon%>"></span>
+            <a href="/talks/modify/<%=talk.talkid%>"><%= talks[i].title %></a>
+        </td>
+        <td>
+<span class="<%= (talk.accepted > 0)?'label label-success label-as-badge':'badge'%>"><%=talk.accepted%>/<%=talk.submitted%></span>
+        </td>
+        <td>
+        <a href="#" role="button" class="btn btn-xs btn-info" data-toggle="popover" title="<%=talk.title%>" data-content="<%=talk.abstract%>" data-placement='left' data-trigger="focus">
+            <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
+        <a href="/talks/modify/<%=talk.talkid%>" class="btn btn-xs btn-info" role="button" title="Modify your talk"><span class="glyphicon glyphicon-edit"></span></a>
+        <a href="" target=_blank class="btn btn-xs btn-info submit-talk-link" role="button" title="Submit your talk" data-toggle="modal" data-target="#submit-talk" data-id="<%=talk.talkid%>"><span class="glyphicon glyphicon-plus"></span></a>
+        <% if (talk.slide_link) { %>
+        <a href="<%=talk.slide_link%>" target=_blank class="btn btn-xs btn-info" role="button" title="View slides"><span class="glyphicon glyphicon-eye-open"></span></a>
+        <% } %>
+        <a href="#" class="btn btn-xs btn-danger pull-right" role="button" data-href="/talks/delete/<%=talk.talkid%>" data-toggle="modal" data-target="#confirm-delete"><span class="glyphicon glyphicon-trash"></span></a>
+        </td>
+      </tr>
+<% } %>
+    </tbody>
+  </table>
+</div>
+
+<!-- DELETE CONFIRMATION DESTINATION URL PASS -->
+<script>
+$('#confirm-delete').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+</script>
+
+<% include footer %>

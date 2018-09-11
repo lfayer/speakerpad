@@ -1,0 +1,37 @@
+<% include ../header %>
+<div class="col-sm-8 col-sm-offset-2">
+    <h1><span class="fa fa-book"></span><%= conf ? "Edit" : "Add" %> a conference</h1>
+
+    <form action="" method="post" id="confForm">
+        <div class="form-group">
+            <label>Conference Name</label>
+            <input type="text" class="form-control" name="conference_name" value="<%= conf? conf.conference_name : '' %>" required>
+        </div>
+        <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" class="form-control" name="start_date" value="<%= conf? conf.start_date : '' %>">
+        </div>
+        <div class="form-group">
+            <label>End Date</label>
+            <input type="date" class="form-control" name="end_date" value="<%= conf? conf.end_date : '' %>">
+        </div>
+        <div class="form-group">
+            <label>CFP Start Date</label>
+            <input type="date" class="form-control" name="cfp_start_date" value="<%= conf? conf.cfp_start_date : '' %>">
+        </div>
+        <div class="form-group">
+            <label>CFP End Date</label>
+            <input type="date" class="form-control" name="cfp_end_date" value="<%= conf? conf.cfp_end_date : '' %>">
+        </div>
+        <div class="form-group">
+            <label>Website</label>
+            <input type="text" class="form-control" name="website" value="<%= conf? conf.website : '' %>" placeholder="http://">
+        </div>
+        <button type="submit" class="btn btn-warning btn-lg"><%= conf ? "Update" : "Register" %></button>
+    </form>
+</div>
+
+</script>
+
+<% include ../footer %>
+

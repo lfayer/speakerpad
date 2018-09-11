@@ -1,0 +1,139 @@
+<% include header %>
+
+    <% if (errors && errors.length > 0) { %>
+        <div class="alert alert-danger"><%= errors %></div>
+    <% } %>
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this bio?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger btn-ok">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+
+    <h1><span class="fa fa-user"></span> Info</h1>
+    
+    <% include reg-form %>    
+
+</div>
+<div class="col-md-6">
+    <h1><span class="fa fa-th-list"></span> Bios 
+ <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Keep track of different types of bios for different types of conferences"></span>
+</h1>
+    <div class="panel-group" id="accordion">
+<%
+    for (var i = 0; i < bios.length; i++) {
+        var bio = bios[i];
+
+%>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse<%=i%>">
+                        <%=bio.title%>
+        <a href="#" class="btn btn-xs btn-anger pull-right" role="button" data-href="/profile/bio/delete/<%=bio.bioid%>" data-toggle="modal" data-target="#confirm-delete"><span class="glyphicon glyphicon-trash"></span></a>
+                    </a>
+                </h4>
+            </div>
+        <div id="collapse<%=i%>" class="panel-collapse collapse">
+            <div class="panel-body">
+            <%=bio.body%>
+            </div>
+        </div>
+    </div>
+<%
+    }
+%>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse<%=bios.length%>">
+        <span class="fa fa-plus"></span> add new bio
+        </a>
+      </h4>
+    </div>
+    <div id="collapse<%=bios.length%>" class="panel-collapse collapse">
+      <div class="panel-body">
+         <form action="/profile/bio/add" method="post" role="form" data-toggle="validator">
+                <div class="form-group">
+                    <label>Label</label>
+                    <input type="text" class="form-control" name="title" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea name="body" class="form-control" rows="10" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-warning btn-lg">Add bio</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+</div>
+
+</div>
+<div class="row">
+<div class="col-md-6">
+    <h1><span class="fa fa-users"></span> Organizations</h1>
+<%
+    if (orgs) {
+%>
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+
+<%
+        for (var i = 0; i < orgs.length; i++) {
+            var org = orgs[i];
+
+%>
+                <tr>
+                    <% if (org.role == 'manager') { %>
+                        <td><a href="/org/<%=org.orgid%>/dashboard"><%=org.org_name%></a></td>
+                    <% } else { %>
+                        <td><%=org.org_name%></td>
+                    <% } %>
+                    <td><span class="badge"><%=org.member_count%></span></td>
+                </tr>
+<%
+        }
+%>
+    </tbody>
+</table>
+<%
+    }
+%>
+    <form action="/org/add" method="post" role="form" data-toggle="validator">
+                <div class="form-group">
+                    <label>Organization name</label>
+                    <input type="text" class="form-control" name="org_name" id="org_name" required>
+                </div>
+                <button type="submit" class="btn btn-warning btn-lg">Create organization</button>
+</div>
+</div>
+
+<!-- DELETE CONFIRMATION DESTINATION URL PASS -->
+<script>
+$('#confirm-delete').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+</script>
+<% include footer %>

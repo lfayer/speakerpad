@@ -1,0 +1,34 @@
+<% include public-header %>
+    <% if (obj) { %>
+    <h1><%=obj.title%></h1>
+    <h2><em>presented at</em> <%=obj.conference_name%></h2>
+    <h3><em>by</em> <%=obj.first_name%> <%=obj.last_name%></h3>
+<br \>
+    <form action="" method="post" role="form" data-toggle="validator">
+        <div class="form-group">
+        <label for="rating" class="control-label">How did you like the talk?</label>
+        <input id="rating" class="rating rating-loading" data-min="0" data-max="5" data-step="0.5" data-show-clear="false" data-show-caption="false" data-size="xl" required>
+            <label>Comments and/or recommendations for improvement:</label>
+            <textarea name="comment" rows=10 class="form-control"></textarea>
+            <input type="hidden" name="conferenceid" value="<%=obj.conferenceid%>">
+            <input type="hidden" name="talkid" value="<%=obj.talkid%>">
+            <input type="hidden" name="rating" id="rating_input" value="0">
+        </div>
+        <button type="submit" class="btn btn-warning btn-lg">Submit feedback</button>
+    <% } else { %>
+    <div class="jumbotron">
+      <div class="container">
+        <img src="/img/SpeakerPad-logo-icon.png" class="center-block">
+        <h1 class="text-center">Thank you for your feedback!</h1>
+        <p class="text-center">Check out what else you can do with SpeakerPad</p>
+        <p class="text-center"><a class="btn btn-primary btn-lg" href="/talks" role="button">Explore</a></p>
+      </div>
+    </div>
+    <% } %>
+<script>
+ $("#rating").rating(); // Initialize star-rating
+    $('#rating').on('rating.change', function(event, value, caption) {
+        $("#rating_input").val(value);
+    });
+</script>
+<% include footer %>

@@ -1,0 +1,93 @@
+<% include ../header %>
+<div class="row">
+
+<div class="col-md-12">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading">Latest Accepted Talks</div>
+
+      <!-- Table -->
+      <table class="table table-striped table-nonfluid" id="latest-accepted">
+            <tr>
+                <th>Name</th>
+                <th>Talk</th>
+                <th>Conference</th>
+                <th>Accepted On</th>
+                <th>Conference Starts</th>
+            </tr>
+      </table>
+      <div class="panel-body">
+        <span class="pull-right"><a href="/org/<%=orgid%>/submissions">View all submissions <span class="fa fa-arrow-right"></span></a></span>
+      </div>
+    </div>
+</div>
+</div> <!-- end  row -->
+
+<div class="row">
+<div class="col-md-6">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading">Upcoming CFPs</div>
+
+      <!-- Table -->
+      <table class="table" id="upcoming-cfps">
+            <th>Conference</th>
+            <th>CFP Start</th>
+            <th>CFP End</th>
+      </table>
+     <div class="panel-body">
+        <span class="pull-right"><a href="/org/<%=orgid%>/conferences">View all upcoming conferences <span class="fa fa-arrow-right"></span></a></span>
+     </div>
+    </div>
+</div>
+<div class="col-md-6">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading">Panel heading</div>
+
+      <!-- Table -->
+      <table class="table">
+        ...
+      </table>
+    </div>
+</div>
+
+</div> <!-- end row -->
+
+<script>
+// TODO: improve code reuse
+$.ajax({
+    url: '/org/<%=orgid%>/dashboard/latest-accepted',
+    type: 'GET',
+    data: {},
+    success: function (response) {
+        var trHTML = '';
+        $.each(response, function (i, item) {
+            trHTML += '<tr><td>' + item.member_name + 
+                        '</td><td>' + item.title + 
+                        '</td><td> <a href="/conferences/modify/'+item.conferenceid+'">' + item.conference_name + '</a>'+
+                        '</td><td>' + item.accepted_date + 
+                        '</td><td>' + item.start_date + 
+                        '</td></tr>';
+        });
+        $('#latest-accepted').append(trHTML);
+    }
+});
+$.ajax({
+    url: '/api/upcoming-cfps',
+    type: 'GET',
+    data: {},
+    success: function (response) {
+        var trHTML = '';
+        $.each(response, function (i, item) {
+            trHTML += '<tr><td> <a href="/conference/'+item.conferenceid+'">' + item.conference_name + '</a>'+
+                        '</td><td>' + item.cfp_start_date +
+                        '</td><td>' + item.cfp_end_date +
+                        '</td></tr>';
+        });
+        $('#upcoming-cfps').append(trHTML);
+    }
+});
+</script>
+
+<% include ../footer %>

@@ -1,0 +1,72 @@
+<% include header %>
+
+<div class="row">
+<div class="col-md-6">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading">Upcoming CFPs</div>
+
+      <!-- Table -->
+      <table class="table" id="upcoming-cfps">
+            <th>Conference</th>
+            <th>CFP End</th>
+            <th>Conference Start</th>
+      </table>
+     <div class="panel-body">
+     </div>
+    </div>
+</div>
+<div class="col-md-6">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading">Upcoming Talks</div>
+
+      <!-- Table -->
+      <!-- Table -->
+      <table class="table" id="upcoming-talks">
+            <th>Conference</th>
+            <th>Talk</th>
+            <th>Conference&nbsp;Start</th>
+      </table>
+     <div class="panel-body">
+     </div>
+    </div>
+</div>
+
+</div> <!-- end row -->
+
+<script>
+// TODO: improve code reuse
+$.ajax({
+    url: '/api/upcoming-talks',
+    type: 'GET',
+    data: {},
+    success: function (response) {
+        var trHTML = '';
+        $.each(response, function (i, item) {
+            trHTML += '<tr><td> <a href="/conferences/modify/'+item.conferenceid+'">' + item.conference_name + '</a>'+
+                        '</td><td>' + item.title + 
+                        '</td><td>' + item.start_date + 
+                        '</td></tr>';
+        });
+        $('#upcoming-talks').append(trHTML);
+    }
+});
+$.ajax({
+    url: '/api/upcoming-cfps',
+    type: 'GET',
+    data: {},
+    success: function (response) {
+        var trHTML = '';
+        $.each(response, function (i, item) {
+            trHTML += '<tr><td> <a href="/conferences/modify/'+item.conferenceid+'">' + item.conference_name + '</a>'+
+                        '</td><td>' + item.cfp_end_date +
+                        '</td><td>' + item.start_date +
+                        '</td></tr>';
+        });
+        $('#upcoming-cfps').append(trHTML);
+    }
+});
+</script>
+
+<% include footer %>
